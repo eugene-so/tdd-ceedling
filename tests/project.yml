@@ -38,18 +38,13 @@
     # Removing source path to test files, usually done on folders that are in the tests folders
     # - -:src/peripherals/onewire/test/support
   :source:
-    - +:../src/app/common
-    - +:../src/app/common/app-config
-    - +:../src/app/lora/app-config-translators
+    - +:../src/app
     # Examples:
     # - src/**
     # - -:src/peripherals/onewire/test**
     # - -:src/peripherals/onewire/test/support
   :support:
     - +:support
-    - +:../submodules/sensor-shared/src/params
-    - +:../submodules/sensor-shared/src/cutilities
-    - +:../submodules/sensor-shared/src/peripherals/lis3dh
     # Support files are files
     # - +:src/peripherals/onewire/test/support
   :libraries: []
