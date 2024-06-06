@@ -72,6 +72,14 @@ void test_leds_TurnOnMultipleLeds(void)
     TEST_ASSERT_EQUAL_HEX16(0x180, virtualLeds);
 }
 
+void test_leds_TurnOffMultipleLeds(void)
+{
+   Leds_TurnAllOn();
+   Led_TurnOff(9);
+   Led_TurnOff(8);
+   TEST_ASSERT_EQUAL_HEX16(0xfe7f, virtualLeds);
+}
+
 void test_leds_AllOn(void)
 {
     Leds_TurnAllOn();
@@ -134,4 +142,40 @@ void test_leds_OutOfBoundsTurnOffCauseAssertion(void)
     {
         TEST_ASSERT_EQUAL(CEXCEPTION_ASSERT_FAIL, e);
     }
+}
+
+void test_leds_OutOfBoundsReadCausesAssertion(void)
+{
+    CEXCEPTION_T e;
+    Try
+    {
+        Led_IsOn(-1);
+        TEST_FAIL_MESSAGE("Should have thrown CEXCEPTION_ASSERT_FAIL!");
+    }
+    Catch(e)
+    {
+        TEST_ASSERT_EQUAL(CEXCEPTION_ASSERT_FAIL, e);
+    }
+}
+
+void test_leds_IsOn(void)
+{
+    TEST_ASSERT_FALSE(Led_IsOn(11));
+    Led_TurnOn(11);
+    TEST_ASSERT_TRUE(Led_IsOn(11));
+}
+
+void test_leds_IsOff(void)
+{
+    TEST_ASSERT_TRUE(Led_IsOff(12));
+    Led_TurnOn(12);
+    TEST_ASSERT_FALSE(Led_IsOff(12));
+}
+
+void test_leds_AllOff(void)
+{
+    Leds_TurnAllOn();
+    Leds_TurnAllOff();
+    TEST_ASSERT_EQUAL_HEX16(0, virtualLeds);
+
 }
