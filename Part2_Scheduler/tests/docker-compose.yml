@@ -1,0 +1,7 @@
+services:
+  unit-tests:
+    build: .
+    volumes:
+      - ../:/root/tdd-ceedling
+    working_dir: /root/tdd-ceedling/tests
+    command: ceedling
