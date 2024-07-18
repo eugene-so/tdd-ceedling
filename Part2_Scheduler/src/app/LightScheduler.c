@@ -17,6 +17,7 @@ enum
 typedef struct
 {
     int32_t id;
+    Day day;
     int32_t minuteOfDay;
     int32_t event;
 } ScheduledLightEvent_t;
@@ -36,6 +37,7 @@ void LightScheduler_Destroy(void)
 static void ScheduleEvent(int32_t id, Day day, int32_t minuteOfDay, int32_t event)
 {
     scheduledEvent.id = id;
+    scheduledEvent.day = day;
     scheduledEvent.event = event;
     scheduledEvent.minuteOfDay = minuteOfDay;
 }
@@ -62,6 +64,15 @@ static void ProcessEventDueNow(Time* time, ScheduledLightEvent_t* lightEvent)
 {
     if (lightEvent->id == UNUSED)
         return;
+
+    if (lightEvent->day != EVERYDAY)
+    {
+        if (lightEvent->day != WEEKEND && lightEvent->day != time->dayOfWeek)
+            return;
+
+        if (lightEvent->day == WEEKEND && time->dayOfWeek != SATURDAY && time->dayOfWeek != SUNDAY)
+            return;
+    }
 
     if (lightEvent->minuteOfDay != time->minuteOfDay)
         return;

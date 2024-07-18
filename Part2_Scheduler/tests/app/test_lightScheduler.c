@@ -102,3 +102,53 @@ void test_lightScheduler_ScheduleOffEverydayItsTime(void)
 
     TestLightState(3, LIGHT_OFF);
 }
+
+void test_lightScheduler_ScheduleTuesdayButItsMonday(void)
+{
+    LightScheduler_ScheduleTurnOn(3, TUESDAY, 1200);
+    SetTimeTo(MONDAY, 1200);
+
+    LightScheduler_WakeUp();
+
+    TestLightState(LIGHT_ID_UNKNOWN, LIGHT_STATE_UNKNOWN);
+}
+
+void test_lightScheduler_ScheduleTuesdayItsTuesday(void)
+{
+    LightScheduler_ScheduleTurnOn(3, TUESDAY, 1200);
+    SetTimeTo(TUESDAY, 1200);
+
+    LightScheduler_WakeUp();
+
+    TestLightState(3, LIGHT_ON);
+}
+
+void test_lightScheduler_ScheduleWeekendItsFriday(void)
+{
+    LightScheduler_ScheduleTurnOn(3, WEEKEND, 1200);
+    SetTimeTo(FRIDAY, 1200);
+
+    LightScheduler_WakeUp();
+
+    TestLightState(LIGHT_ID_UNKNOWN, LIGHT_STATE_UNKNOWN);
+}
+
+void test_lightScheduler_ScheduleWeekendItsSaturday(void)
+{
+    LightScheduler_ScheduleTurnOn(3, WEEKEND, 1200);
+    SetTimeTo(SATURDAY, 1200);
+
+    LightScheduler_WakeUp();
+
+    TestLightState(3, LIGHT_ON);
+}
+
+void test_lightScheduler_ScheduleWeekendItsSunday(void)
+{
+    LightScheduler_ScheduleTurnOn(3, WEEKEND, 1200);
+    SetTimeTo(SUNDAY, 1200);
+
+    LightScheduler_WakeUp();
+
+    TestLightState(3, LIGHT_ON);
+}
