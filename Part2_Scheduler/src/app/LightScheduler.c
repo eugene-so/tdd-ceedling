@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "TimeService.h"
@@ -60,19 +61,32 @@ static void OperateLight(ScheduledLightEvent_t* lightEvent)
         LightController_Off(lightEvent->id);
 }
 
+static bool IsReactionDay(Time* time, Day reactionDay)
+{
+    Day today = time->dayOfWeek;
+
+    if (reactionDay == EVERYDAY)
+        return true;
+
+    if (reactionDay == today)
+        return true;
+
+    if (reactionDay == WEEKEND && (SATURDAY == today || SUNDAY == today))
+        return true;
+
+    if (reactionDay == WEEKDAY && today >= MONDAY && today <= FRIDAY)
+        return true;
+
+    return false;
+}
+
 static void ProcessEventDueNow(Time* time, ScheduledLightEvent_t* lightEvent)
 {
     if (lightEvent->id == UNUSED)
         return;
 
-    if (lightEvent->day != EVERYDAY)
-    {
-        if (lightEvent->day != WEEKEND && lightEvent->day != time->dayOfWeek)
-            return;
-
-        if (lightEvent->day == WEEKEND && time->dayOfWeek != SATURDAY && time->dayOfWeek != SUNDAY)
-            return;
-    }
+    if (!IsReactionDay(time, lightEvent->day))
+        return;
 
     if (lightEvent->minuteOfDay != time->minuteOfDay)
         return;
