@@ -28,6 +28,17 @@
 /*******************************************************************************
  *    PRIVATE FUNCTIONS
  ******************************************************************************/
+void SetTimeTo(int32_t day, int32_t minute)
+{
+    FakeTimeService_SetDay(day);
+    FakeTimeService_SetMinute(minute);
+}
+
+void TestLightState(int32_t id, int32_t state)
+{
+    TEST_ASSERT_EQUAL_INT32(id, LightControllerSpy_GetLastId());
+    TEST_ASSERT_EQUAL_INT32(state, LightControllerSpy_GetLastState());
+}
 
 /*******************************************************************************
  *    SETUP, TEARDOWN
@@ -52,53 +63,42 @@ void tearDown(void)
  ******************************************************************************/
 void test_lightScheduler_Init_NoChangeToLights_success(void)
 {
-    TEST_ASSERT_EQUAL_INT32(LIGHT_ID_UNKNOWN, LightControllerSpy_GetLastId());
-    TEST_ASSERT_EQUAL_INT32(LIGHT_STATE_UNKNOWN, LightControllerSpy_GetLastState());
+    TestLightState(LIGHT_ID_UNKNOWN, LIGHT_STATE_UNKNOWN);
 }
 
-#if 0
 void test_lightScheduler_NoSchedule_NothingHappens(void)
 {
-    FakeTimeService_SetDay(MONDAY);
-    FakeTimeService_SetMinute(100);
-    LightScheduler_Wakeup();
-    TEST_ASSERT_EQUAL_INT32(LIGHT_ID_UNKNOWN, LightControllerSpy_GetLastId());
-    TEST_ASSERT_EQUAL_INT32(LIGHT_STATE_UNKNOWN, LightControllerSpy_GetLastState());
+    SetTimeTo(MONDAY, 100);
+    LightScheduler_WakeUp();
+    TestLightState(LIGHT_ID_UNKNOWN, LIGHT_STATE_UNKNOWN);
 }
 
 void test_lightScheduler_ScheduleOnEverydayNotTimeYet_success(void)
 {
     LightScheduler_ScheduleTurnOn(3, EVERYDAY, 1200);
-    FakeTimeService_SetDay(MONDAY);
-    FakeTimeService_SetMinute(1199);
+    SetTimeTo(MONDAY, 1199);
 
     LightScheduler_WakeUp();
 
-    TEST_ASSERT_EQUAL_INT32(LIGHT_ID_UNKNOWN, LightControllerSpy_GetLastId());
-    TEST_ASSERT_EQUAL_INT32(LIGHT_STATE_UNKNOWN, LightControllerSpy_GetLastState());
+    TestLightState(LIGHT_ID_UNKNOWN, LIGHT_STATE_UNKNOWN);
 }
 
 void test_lightScheduler_ScheduleOnEverydayItsTime(void)
 {
     LightScheduler_ScheduleTurnOn(3, EVERYDAY, 1200);
-    FakeTimeService_SetDay(MONDAY);
-    FakeTimeService_SetMinute(1200);
+    SetTimeTo(MONDAY, 1200);
 
     LightScheduler_WakeUp();
 
-    TEST_ASSERT_EQUAL_INT32(3, LightControllerSpy_GetLastId());
-    TEST_ASSERT_EQUAL_INT32(LIGHT_ON, LightControllerSpy_GetLastState());
+    TestLightState(3, LIGHT_ON);
 }
 
 void test_lightScheduler_ScheduleOffEverydayItsTime(void)
 {
     LightScheduler_ScheduleTurnOff(3, EVERYDAY, 1200);
-    FakeTimeService_SetDay(MONDAY);
-    FakeTimeService_SetMinute(1200);
+    SetTimeTo(MONDAY, 1200);
 
     LightScheduler_WakeUp();
 
-    TEST_ASSERT_EQUAL_INT32(3, LightControllerSpy_GetLastId());
-    TEST_ASSERT_EQUAL_INT32(LIGHT_OFF, LightControllerSpy_GetLastState());
+    TestLightState(3, LIGHT_OFF);
 }
-#endif
