@@ -58,3 +58,11 @@ void test_lightControllerSpy_RememberLastLightIdControlled(void)
     TEST_ASSERT_EQUAL_INT32(LIGHT_ON, LightControllerSpy_GetLastState());
 
 }
+
+void test_lightControllerSpy_RememberAllLightStates(void)
+{
+    LightController_On(0);
+    LightController_Off(31);
+    TEST_ASSERT_EQUAL_INT32(LIGHT_ON, LightControllerSpy_GetLightState(0));
+    TEST_ASSERT_EQUAL_INT32(LIGHT_OFF, LightControllerSpy_GetLightState(31));
+}

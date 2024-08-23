@@ -36,8 +36,15 @@ void SetTimeTo(int32_t day, int32_t minute)
 
 void TestLightState(int32_t id, int32_t state)
 {
-    TEST_ASSERT_EQUAL_INT32(id, LightControllerSpy_GetLastId());
-    TEST_ASSERT_EQUAL_INT32(state, LightControllerSpy_GetLastState());
+    if (id == LIGHT_ID_UNKNOWN)
+    {
+        TEST_ASSERT_EQUAL_INT32(id, LightControllerSpy_GetLastId());
+        TEST_ASSERT_EQUAL_INT32(state, LightControllerSpy_GetLastState());
+    }
+    else
+    {
+        TEST_ASSERT_EQUAL_INT32(state, LightControllerSpy_GetLightState(id));
+    }
 }
 
 /*******************************************************************************
@@ -151,4 +158,15 @@ void test_lightScheduler_ScheduleWeekendItsSunday(void)
     LightScheduler_WakeUp();
 
     TestLightState(3, LIGHT_ON);
+}
+
+void test_lightScheduler_ScheduleTwoEventsAtSameTime(void)
+{
+    LightScheduler_ScheduleTurnOn(3, SUNDAY, 1200);
+    LightScheduler_ScheduleTurnOn(12, SUNDAY, 1200);
+    SetTimeTo(SUNDAY, 1200);
+    LightScheduler_WakeUp();
+
+    TestLightState(3, LIGHT_ON);
+    TestLightState(12, LIGHT_ON);
 }
