@@ -12,5 +12,7 @@ enum
 
 void FakeTimeService_SetMinute(int32_t);
 void FakeTimeService_SetDay(int32_t);
+WakeupCallback FakeTimeService_GetAlarmCallback(void);
+int32_t FakeTimeService_GetAlarmPeriod(void);
 
 #endif /* FAKE_TIME_SERVICE_H */
