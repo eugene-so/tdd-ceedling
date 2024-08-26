@@ -225,7 +225,7 @@ void test_lightScheduler_RejectsInvalidLightIds(void)
     TEST_ASSERT_FALSE(LightScheduler_ScheduleTurnOn(32, MONDAY, 600));
 }
 
-#if 0
+#if 1
 /* Could not get this test to work for indeterminate reason */
 void test_lightScheduler_Randomizer_TurnsOnEarly(void)
 {

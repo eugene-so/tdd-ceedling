@@ -76,7 +76,7 @@ bool LightScheduler_ScheduleTurnOff(int32_t id, Day day, int32_t minuteOfDay)
     return ScheduleEvent(id, day, minuteOfDay, TURN_OFF);
 }
 
-#if 0
+#if 1
 void LightScheduler_Randomize(int32_t id, Day day, int32_t minuteOfDay)
 {
     for (uint8_t i = 0; i < MAX_EVENTS; i++)
