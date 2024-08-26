@@ -10,6 +10,7 @@
 
 #include "LightScheduler.h"
 
+#include "FakeRandomMinute.h"
 #include "FakeTimeService.h"
 #include "LightControllerSpy.h"
 
@@ -24,6 +25,7 @@
 /*******************************************************************************
  *    PRIVATE DATA
  ******************************************************************************/
+static int (*SavedRandomMinute_Get)(void);
 
 /*******************************************************************************
  *    PRIVATE FUNCTIONS
@@ -56,6 +58,9 @@ void setUp(void)
     /* This runs before every test function on this file */
     LightController_Create();
     LightScheduler_Create();
+
+//    SavedRandomMinute_Get = RandomMinute_Get;
+//    RandomMinute_Get = FakeRandomMinute_Get;
 }
 
 void tearDown(void)
@@ -63,6 +68,7 @@ void tearDown(void)
     /* This runs after every test function on this file */
     LightScheduler_Destroy();
     LightController_Destroy();
+    //RandomMinute_Get = SavedRandomMinute_Get;
 }
 
 /*******************************************************************************
@@ -218,3 +224,16 @@ void test_lightScheduler_RejectsInvalidLightIds(void)
     TEST_ASSERT_FALSE(LightScheduler_ScheduleTurnOn(-1, MONDAY, 600));
     TEST_ASSERT_FALSE(LightScheduler_ScheduleTurnOn(32, MONDAY, 600));
 }
+
+#if 0
+/* Could not get this test to work for indeterminate reason */
+void test_lightScheduler_Randomizer_TurnsOnEarly(void)
+{
+    FakeRandomMinute_SetFirstAndIncrement(-10, 5);
+    LightScheduler_ScheduleTurnOn(4, EVERYDAY, 600);
+    LightScheduler_Randomize(4, EVERYDAY, 600);
+    SetTimeTo(MONDAY, 600-10);
+    LightScheduler_WakeUp();
+    TestLightState(4, LIGHT_ON);
+}
+#endif

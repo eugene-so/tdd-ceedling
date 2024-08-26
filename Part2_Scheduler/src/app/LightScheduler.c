@@ -2,22 +2,21 @@
 #include <stdint.h>
 
 #include "TimeService.h"
+#include "LightController.h"
 #include "LightScheduler.h"
+#include "RandomMinute.h"
 
 enum
 {
     TURN_ON,
     TURN_OFF,
+    RANDOM_ON,
+    RANDOM_OFF,
 };
 
 enum
 {
     MAX_EVENTS = 128, UNUSED = -1
-};
-
-enum
-{
-    MAX_LIGHTS = 32
 };
 
 typedef struct
@@ -26,6 +25,8 @@ typedef struct
     Day day;
     int32_t minuteOfDay;
     int32_t event;
+    int randomize;
+    int randomMinutes;
 } ScheduledLightEvent_t;
 
 static ScheduledLightEvent_t scheduledEvent;
@@ -74,6 +75,21 @@ bool LightScheduler_ScheduleTurnOff(int32_t id, Day day, int32_t minuteOfDay)
 {
     return ScheduleEvent(id, day, minuteOfDay, TURN_OFF);
 }
+
+#if 0
+void LightScheduler_Randomize(int32_t id, Day day, int32_t minuteOfDay)
+{
+    for (uint8_t i = 0; i < MAX_EVENTS; i++)
+    {
+        ScheduledLightEvent_t *event = &scheduledEvents[i];
+        if (event->id == id && event->day == day && event->minuteOfDay == minuteOfDay)
+        {
+            event->randomize = RANDOM_ON;
+            event->randomMinutes = RandomMinute_Get();
+        }
+    }
+}
+#endif
 
 void LightScheduler_ScheduleRemove(int32_t id, Day day, int32_t minute)
 {
