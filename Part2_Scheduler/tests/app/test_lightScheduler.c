@@ -170,3 +170,51 @@ void test_lightScheduler_ScheduleTwoEventsAtSameTime(void)
     TestLightState(3, LIGHT_ON);
     TestLightState(12, LIGHT_ON);
 }
+
+void test_lightScheduler_RejectsTooManyEvents(void)
+{
+    uint8_t i;
+    for (i = 0; i < 128; ++i)
+    {
+        TEST_ASSERT_TRUE(LightScheduler_ScheduleTurnOn(6, MONDAY, 600+i));
+    }
+    TEST_ASSERT_FALSE(LightScheduler_ScheduleTurnOn(6, MONDAY, 600+i));
+}
+
+void test_lightScheduler_RemoveRecyclesScheduleSlot(void)
+{
+    uint8_t i;
+    for (i = 0; i < 128; ++i)
+    {
+        TEST_ASSERT_TRUE(LightScheduler_ScheduleTurnOn(6, MONDAY, 600+i));
+    }
+
+    LightScheduler_ScheduleRemove(6, MONDAY, 600);
+
+    TEST_ASSERT_TRUE(LightScheduler_ScheduleTurnOn(13, MONDAY, 1000));
+}
+
+void test_lightScheduler_RemoveMultipleScheduledEvent(void)
+{
+    LightScheduler_ScheduleTurnOn(6, MONDAY, 600);
+    LightScheduler_ScheduleTurnOn(7, MONDAY, 600);
+    LightScheduler_ScheduleRemove(6, MONDAY, 600);
+    SetTimeTo(MONDAY, 600);
+    LightScheduler_WakeUp();
+
+    TestLightState(6, LIGHT_STATE_UNKNOWN);
+    TestLightState(7, LIGHT_ON);
+}
+
+void test_lightScheduler_AcceptsValidLightIds(void)
+{
+    TEST_ASSERT_TRUE(LightScheduler_ScheduleTurnOn(0, MONDAY, 600));
+    TEST_ASSERT_TRUE(LightScheduler_ScheduleTurnOn(15, MONDAY, 600));
+    TEST_ASSERT_TRUE(LightScheduler_ScheduleTurnOn(31, MONDAY, 600));
+}
+
+void test_lightScheduler_RejectsInvalidLightIds(void)
+{
+    TEST_ASSERT_FALSE(LightScheduler_ScheduleTurnOn(-1, MONDAY, 600));
+    TEST_ASSERT_FALSE(LightScheduler_ScheduleTurnOn(32, MONDAY, 600));
+}

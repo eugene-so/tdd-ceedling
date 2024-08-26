@@ -15,6 +15,11 @@ enum
     MAX_EVENTS = 128, UNUSED = -1
 };
 
+enum
+{
+    MAX_LIGHTS = 32
+};
+
 typedef struct
 {
     int32_t id;
@@ -40,8 +45,11 @@ void LightScheduler_Destroy(void)
     TimeService_CancelPeriodicAlarmInSeconds(60, LightScheduler_WakeUp);
 }
 
-static void ScheduleEvent(int32_t id, Day day, int32_t minuteOfDay, int32_t event)
+static bool ScheduleEvent(int32_t id, Day day, int32_t minuteOfDay, int32_t event)
 {
+    if (id < 0 || id >= MAX_LIGHTS)
+        return false;
+
     for (uint8_t i = 0; i < MAX_EVENTS; ++i)
     {
         if (scheduledEvents[i].id == UNUSED)
@@ -50,20 +58,37 @@ static void ScheduleEvent(int32_t id, Day day, int32_t minuteOfDay, int32_t even
             scheduledEvents[i].day = day;
             scheduledEvents[i].event = event;
             scheduledEvents[i].minuteOfDay = minuteOfDay;
-            break;
+            return true;
         }
     }
+
+    return false;
 }
 
-void LightScheduler_ScheduleTurnOn(int32_t id, Day day, int32_t minuteOfDay)
+bool LightScheduler_ScheduleTurnOn(int32_t id, Day day, int32_t minuteOfDay)
 {
-    ScheduleEvent(id, day, minuteOfDay, TURN_ON);
+    return ScheduleEvent(id, day, minuteOfDay, TURN_ON);
 }
 
-void LightScheduler_ScheduleTurnOff(int32_t id, Day day, int32_t minuteOfDay)
+bool LightScheduler_ScheduleTurnOff(int32_t id, Day day, int32_t minuteOfDay)
 {
-    ScheduleEvent(id, day, minuteOfDay, TURN_OFF);
+    return ScheduleEvent(id, day, minuteOfDay, TURN_OFF);
 }
+
+void LightScheduler_ScheduleRemove(int32_t id, Day day, int32_t minute)
+{
+    uint8_t i;
+
+    for (i = 0; i < MAX_EVENTS; i++)
+    {
+        if (scheduledEvents[i].id == id
+         && scheduledEvents[i].day == day
+         && scheduledEvents[i].minuteOfDay == minute)
+         {
+             scheduledEvents[i].id = UNUSED;
+         }
+    }
+ }
 
 static void OperateLight(ScheduledLightEvent_t* lightEvent)
 {
